@@ -1,18 +1,13 @@
 
 # word length between 5 and 12 characters
 
-file_path = 'dictionary.txt'
+dictionary = 'dictionary.txt'
 
-def get_word(file_path)
-  word = File.readlines(file_path).sample.strip
-  puts "Word length: #{word.length}"
-  if word.length >= 5 && word.length <= 12
-    word
-  else
-    get_word(file_path)
-  end
+def get_word(file)
+  word = File.readlines(file).sample.strip  
+  word.length.between?(5, 12) ? word : get_word(file)
 end
 
-secret_word = get_word(file_path)
+secret_word = get_word(dictionary)
 puts secret_word
 puts "Secret Word Length: #{secret_word.length}"
