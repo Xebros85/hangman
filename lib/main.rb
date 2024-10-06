@@ -1,12 +1,16 @@
 require 'ruby_figlet'
 using RubyFiglet
+require_relative 'hangman_art'
+include HangmanStages
 
 class Game
   def initialize
     dictionary = './dictionary.txt'
     @lives = 6
     @guessed_letters = []
+    @choice = ""
     @secret_word = get_word(dictionary)
+    @stages = HangmanStages::STAGES
   end
   
   def welcome
@@ -16,6 +20,9 @@ class Game
     puts "Welcome! Choose from the following options:"
     puts
     show_menu
+    puts
+    print "Your choice: "    
+    @choice = gets.chomp
   end
   
   def get_word(file)
@@ -24,7 +31,7 @@ class Game
   end
   
   def play_game
-    welcome  
+    welcome     
   end
 end
 
