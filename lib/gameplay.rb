@@ -45,6 +45,7 @@ class Game
     when "1"      
       puts "\nStarting new game...\n\n"
       sleep(1)
+      system("clear")
       play_game      
     when "2"      
       puts "\nLoading Game...\n\n"
@@ -60,6 +61,14 @@ class Game
       welcome
     end    
   end
+
+  def save_game
+    puts
+    puts "Saving game..."
+    #do stuff to save game
+    sleep(1)
+    exit
+  end
   
   def start_game
     show_title
@@ -70,27 +79,34 @@ class Game
     end_game = false
     display = Array.new(@secret_word.length, "_")
 
-    puts HangmanStages::STAGES[@lives]
-    puts display.join(" ") + "\n"
-    puts
-
+    
     until end_game
+      show_title
+      puts HangmanStages::STAGES[@lives]
+      puts display.join(" ") + "\n"
+      puts
+      
       print "Guess a letter: "
       guess = gets.chomp.upcase
+
+      save_game if guess == "1"
       
       puts "You've already guessed #{guess}" if display.include?(guess)
-
+      
       @secret_word.chars.each_with_index do |letter, position|
         display[position] = letter if letter == guess
       end
-
+      
       unless @secret_word.include?(guess)
+        system("clear")
+        show_title
         @lives -= 1
         puts "You guessed #{guess}, thats not in the word."
         puts HangmanStages::STAGES[@lives]
         end_game = true if @lives == 0
         puts "You lose!\nThe word is #{@secret_word}.\n" if end_game
         puts
+        #play_again?
       else
         puts HangmanStages::STAGES[@lives]
       end
@@ -99,6 +115,11 @@ class Game
       puts
       end_game = true if !display.include?("_")
       puts "You win! The word is #{@secret_word}" if !display.include?("_")
+      #play_again?
+      
+      sleep(2)
+      system("clear")
+
     end
   end
   
