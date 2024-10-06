@@ -33,8 +33,7 @@ class Game
     word = File.readlines(file).sample.strip  
     word.length.between?(5, 12) ? word.upcase : get_word(file)
   end
-  
-  
+    
   def show_menu
     puts "1. Start New Game"
     puts "2. Load Saved Game"
@@ -46,7 +45,7 @@ class Game
     when "1"      
       puts "\nStarting new game...\n\n"
       sleep(1)
-      # play_game      
+      play_game      
     when "2"      
       puts "\nLoading Game...\n\n"
       # load game function to load from a YAML file
@@ -66,9 +65,42 @@ class Game
     show_title
     welcome       
   end
+
+  def play_game
+    end_game = false
+    display = Array.new(@secret_word.length, "_")
+
+    puts HangmanStages::STAGES[@lives]
+    puts display.join(" ") + "\n"
+    puts
+
+    until end_game
+      print "Guess a letter: "
+      guess = gets.chomp.upcase
+      
+      puts "You've already guessed #{guess}" if display.include?(guess)
+
+      @secret_word.chars.each_with_index do |letter, position|
+        display[position] = letter if letter == guess
+      end
+
+      unless @secret_word.include?(guess)
+        @lives -= 1
+        puts "You guessed #{guess}, thats not in the word."
+        puts HangmanStages::STAGES[@lives]
+        end_game = true if @lives == 0
+        puts "You lose!\nThe word is #{@secret_word}.\n" if end_game
+        puts
+      else
+        puts HangmanStages::STAGES[@lives]
+      end
+      
+      puts display.join(" ") + "\n"
+      puts
+      end_game = true if !display.include?("_")
+      puts "You win! The word is #{@secret_word}" if !display.include?("_")
+    end
+  end
   
 end
 
-# secret_word = get_word(dictionary)
-# puts secret_word
-# puts "Secret Word Length: #{secret_word.length}"
