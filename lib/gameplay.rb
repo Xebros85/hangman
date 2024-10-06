@@ -3,15 +3,36 @@ require 'ruby_figlet'
 using RubyFiglet
 require_relative 'hangman_art'
 include HangmanStages
+require "yaml"
 
 class Game
   def initialize
+    # attr_accessor :lives, :secret_word, :guessed_letters
+
     dictionary = 'lib/dictionary.txt'
     @lives = 6
     @guessed_letters = []
     @choice = ""
     @secret_word = get_word(dictionary)
     @stages = HangmanStages::STAGES
+  end
+
+  def save_game
+    Dir.mkdir("saved_games") unless Dir.exist?("saved_games")
+    count = Dir[File.join("saved_games", '**', '*')].count { |file| File.file?(file) }
+    File.open("saved_games/game_#{count + 1}.yaml", "w") do |out|
+      YAML.dump(self, out)
+    end
+    puts "Saving game..."
+    sleep(1)
+    exit
+  end
+
+  def load_game(file)
+    puts "Loading game..."
+    sleep(1)
+    saved_game = YAML::load(File.read("saved_games/game_#{file}.yaml"), permitted_classes: [Game])
+    saved_game.play_game    
   end
 
   def show_title
@@ -46,28 +67,28 @@ class Game
       puts "\nStarting new game...\n\n"
       sleep(1)
       system("clear")
-      play_game      
-    when "2"      
-      puts "\nLoading Game...\n\n"
-      # load game function to load from a YAML file
-      exit
+      play_game
+
+    when "2"
+      Dir.exist?("saved_games") ? (puts Dir["saved_games/*"]) : (puts "No saved games available! Please enter 0.")
+      selection = gets.chomp
+      count_saved_games = Dir[File.join("saved_games", "**", "*")].count { |file| File.file?(file) }
+      until ("0"..count_saved_games.to_s).include?(selection)
+        puts "Invalid input or game not found. Please enter 0 for new game."
+        selection = gets.chomp
+      end
+      selection == "0" ? play_game : load_game(selection)
+
     when "3"      
       puts "\nExiting...\n\n"
       sleep(0.5)      
+
     else
       puts "\nInvalid choice. Please choose from the menu options."
       sleep(0.75)
       system("clear")
       welcome
     end    
-  end
-
-  def save_game
-    puts
-    puts "Saving game..."
-    #do stuff to save game
-    sleep(1)
-    exit
   end
   
   def start_game
@@ -86,12 +107,13 @@ class Game
       puts display.join(" ") + "\n"
       puts
       
-      print "Guess a letter: "
+      print "Type '1' to save game or guess a letter: "
       guess = gets.chomp.upcase
 
       save_game if guess == "1"
       
       puts "You've already guessed #{guess}" if display.include?(guess)
+      @guessed_letters << guess
       
       @secret_word.chars.each_with_index do |letter, position|
         display[position] = letter if letter == guess
@@ -106,7 +128,7 @@ class Game
         end_game = true if @lives == 0
         puts "You lose!\nThe word is #{@secret_word}.\n" if end_game
         puts
-        #play_again?
+        
       else
         puts HangmanStages::STAGES[@lives]
       end
@@ -115,12 +137,32 @@ class Game
       puts
       end_game = true if !display.include?("_")
       puts "You win! The word is #{@secret_word}" if !display.include?("_")
-      #play_again?
       
-      sleep(2)
+      
+      sleep(1)
       system("clear")
 
     end
+    play_again?
+  end
+
+  def play_again?
+    dictionary = 'lib/dictionary.txt'
+    @lives = 6
+    @guessed_letters = []
+    @choice = ""
+    @secret_word = get_word(dictionary)
+    @stages = HangmanStages::STAGES
+    puts
+    puts "Would you like to play again?"
+    answer = gets.chomp
+    play_game if answer == 'y' || answer == 'yes'
+    show_title
+    puts
+    puts "Thanks for playing!"
+    puts
+    puts "Created by Xebros - 2024"
+    exit
   end
   
 end
