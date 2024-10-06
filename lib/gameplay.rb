@@ -1,4 +1,3 @@
-# Main Gameplay
 require 'ruby_figlet'
 using RubyFiglet
 require_relative 'hangman_art'
@@ -7,8 +6,10 @@ require "yaml"
 
 class Game
   def initialize
-    # attr_accessor :lives, :secret_word, :guessed_letters
-
+    reset_variables
+  end
+  
+  def reset_variables
     dictionary = 'lib/dictionary.txt'
     @lives = 6
     @guessed_letters = []
@@ -41,11 +42,9 @@ class Game
   end
   
   def welcome    
-    puts "\n\nChoose from the following options:"
-    puts
-    show_menu
-    puts
-    print "Your choice: "    
+    puts "\n\nChoose from the following options:"    
+    show_menu    
+    print "\nYour choice: "    
     @choice = gets.chomp
     get_choice(@choice) 
   end
@@ -56,7 +55,7 @@ class Game
   end
     
   def show_menu
-    puts "1. Start New Game"
+    puts "\n1. Start New Game"
     puts "2. Load Saved Game"
     puts "3. Exit"
   end
@@ -109,14 +108,12 @@ class Game
   def play_game
     end_game = false
     display = Array.new(@secret_word.length, "_")
-
     
     until end_game
       show_title
       puts HangmanStages::STAGES[@lives]
       puts
       puts display.join(" ") + "\n"      
-      
       puts "\nUsed Letters: #{@guessed_letters}"
       guess = get_player_input
 
@@ -124,48 +121,30 @@ class Game
       
       puts "You've already guessed #{guess}" if @guessed_letters.include?(guess)
       @guessed_letters << guess unless @guessed_letters.include?(guess)
-      
-      
       @secret_word.chars.each_with_index do |letter, position|
         display[position] = letter if letter == guess
       end
       
       unless @secret_word.include?(guess)        
-        # show_title
         @lives -= 1
         puts "\nYou guessed #{guess}, thats not in the word."
-        
-        # puts HangmanStages::STAGES[@lives]
         end_game = true if @lives == 0
         puts "You lose!\nThe word is #{@secret_word}.\n" if end_game
         puts
-        
-      # else
-      #   puts HangmanStages::STAGES[@lives]
       end
       
-      # puts display.join(" ") + "\n"
       puts
       end_game = true if !display.include?("_")
       puts "You win! The word is #{@secret_word}" if !display.include?("_")
-      
-      
       sleep(2)
       system("clear")
-
     end
     play_again?
   end
 
   def play_again?
-    dictionary = 'lib/dictionary.txt'
-    @lives = 6
-    @guessed_letters = []
-    @choice = ""
-    @secret_word = get_word(dictionary)
-    @stages = HangmanStages::STAGES
-    puts
-    puts "Would you like to play again?"
+    reset_variables    
+    puts "\nWould you like to play again?"
     answer = gets.chomp
     play_game if answer == 'y' || answer == 'yes'
     system("clear")
@@ -174,6 +153,4 @@ class Game
     puts "\nCreated by Xebros - 2024\n"
     exit
   end
-  
 end
-
