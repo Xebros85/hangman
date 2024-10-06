@@ -96,6 +96,16 @@ class Game
     welcome       
   end
 
+  def get_player_input
+    print "\nType '1' to save game or guess a letter: "
+    guess = gets.chomp.upcase.gsub(/[^A-Z]/, '')
+    if guess.empty?
+      puts "Please enter a valid letter (A-Z) or '1' to save the game."
+      return get_player_input
+    end
+    guess
+  end
+
   def play_game
     end_game = false
     display = Array.new(@secret_word.length, "_")
@@ -104,42 +114,43 @@ class Game
     until end_game
       show_title
       puts HangmanStages::STAGES[@lives]
-      puts display.join(" ") + "\n"
       puts
+      puts display.join(" ") + "\n"      
       
-      print "Type '1' to save game or guess a letter: "
-      guess = gets.chomp.upcase
+      puts "\nUsed Letters: #{@guessed_letters}"
+      guess = get_player_input
 
       save_game if guess == "1"
       
-      puts "You've already guessed #{guess}" if display.include?(guess)
-      @guessed_letters << guess
+      puts "You've already guessed #{guess}" if @guessed_letters.include?(guess)
+      @guessed_letters << guess unless @guessed_letters.include?(guess)
+      
       
       @secret_word.chars.each_with_index do |letter, position|
         display[position] = letter if letter == guess
       end
       
-      unless @secret_word.include?(guess)
-        system("clear")
-        show_title
+      unless @secret_word.include?(guess)        
+        # show_title
         @lives -= 1
-        puts "You guessed #{guess}, thats not in the word."
-        puts HangmanStages::STAGES[@lives]
+        puts "\nYou guessed #{guess}, thats not in the word."
+        
+        # puts HangmanStages::STAGES[@lives]
         end_game = true if @lives == 0
         puts "You lose!\nThe word is #{@secret_word}.\n" if end_game
         puts
         
-      else
-        puts HangmanStages::STAGES[@lives]
+      # else
+      #   puts HangmanStages::STAGES[@lives]
       end
       
-      puts display.join(" ") + "\n"
+      # puts display.join(" ") + "\n"
       puts
       end_game = true if !display.include?("_")
       puts "You win! The word is #{@secret_word}" if !display.include?("_")
       
       
-      sleep(1)
+      sleep(2)
       system("clear")
 
     end
@@ -157,11 +168,10 @@ class Game
     puts "Would you like to play again?"
     answer = gets.chomp
     play_game if answer == 'y' || answer == 'yes'
-    show_title
-    puts
-    puts "Thanks for playing!"
-    puts
-    puts "Created by Xebros - 2024"
+    system("clear")
+    show_title    
+    puts "\nThanks for playing!"    
+    puts "\nCreated by Xebros - 2024\n"
     exit
   end
   
