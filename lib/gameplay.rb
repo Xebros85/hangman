@@ -1,3 +1,4 @@
+# Main Gameplay
 require 'ruby_figlet'
 using RubyFiglet
 require_relative 'hangman_art'
@@ -5,7 +6,7 @@ include HangmanStages
 
 class Game
   def initialize
-    dictionary = './dictionary.txt'
+    dictionary = 'lib/dictionary.txt'
     @lives = 6
     @guessed_letters = []
     @choice = ""
@@ -45,7 +46,7 @@ class Game
     when "1"      
       puts "\nStarting new game...\n\n"
       sleep(1)
-      # start_game      
+      # play_game      
     when "2"      
       puts "\nLoading Game...\n\n"
       # load game function to load from a YAML file
@@ -63,8 +64,7 @@ class Game
   
   def start_game
     show_title
-    welcome
-       
+    welcome       
   end
   
 end
@@ -72,6 +72,3 @@ end
 # secret_word = get_word(dictionary)
 # puts secret_word
 # puts "Secret Word Length: #{secret_word.length}"
-
-game = Game.new
-game.start_game
