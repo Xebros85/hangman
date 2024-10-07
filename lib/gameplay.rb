@@ -97,9 +97,9 @@ class Game
 
   def get_player_input
     print "\nType '1' to save game or guess a letter: "
-    guess = gets.chomp.upcase.gsub(/1cl[^A-Z]/, '')
-    if guess.empty?
-      puts "Please enter a valid letter (A-Z) or '1' to save the game."
+    guess = gets.chomp.upcase.gsub(/1[^A-Z]/, '')
+    if guess.empty? || guess.length != 1
+      puts "Please enter one valid letter (A-Z) or '1' to save the game."
       return get_player_input
     end
     guess
